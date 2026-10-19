@@ -1,0 +1,192 @@
+@import "tailwindcss";
+
+/* Same warm orange/coral identity as the public app, in a denser, calmer
+   admin layout: cream canvas, white cards, orange for actions and data. */
+:root {
+  --bg: #faf6f1;
+  --surface: #ffffff;
+  --ink: #1f1712;
+  --muted: #6b5b4e;
+  --line: rgb(31 23 18 / 0.12);
+
+  --accent: #c2410c;
+  --accent-hover: #9a3412;
+  --on-accent: #ffffff;
+  --accent-text: #c2410c;
+  --glow: #ff7a1a;
+  --tint: #fff0e3;
+  --tint-2: #ffe0c7;
+
+  --coral: #b9463b;
+  --on-coral: #ffffff;
+  --coral-text: #9b3328;
+  --coral-tint: #fce9e5;
+
+  --ok-text: #166534;
+  --ok-tint: #e8f6ec;
+
+  --shadow: 0 1px 2px rgb(60 30 10 / 0.06), 0 8px 24px -14px rgb(60 30 10 / 0.25);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17110c;
+    --surface: #221a14;
+    --ink: #f6ede4;
+    --muted: #b9a798;
+    --line: rgb(255 235 220 / 0.14);
+
+    --accent: #ff8a3d;
+    --accent-hover: #ffa566;
+    --on-accent: #1f1712;
+    --accent-text: #ffa566;
+    --glow: #ff8a3d;
+    --tint: #33200f;
+    --tint-2: #47290f;
+
+    --coral: #e58173;
+    --on-coral: #1f1712;
+    --coral-text: #f0a599;
+    --coral-tint: #3a1e1a;
+
+    --ok-text: #86d9a0;
+    --ok-tint: #12301c;
+
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -14px rgb(0 0 0 / 0.7);
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-accent-text: var(--accent-text);
+  --color-glow: var(--glow);
+  --color-tint: var(--tint);
+  --color-tint-2: var(--tint-2);
+  --color-coral: var(--coral);
+  --color-on-coral: var(--on-coral);
+  --color-coral-text: var(--coral-text);
+  --color-coral-tint: var(--coral-tint);
+  --color-ok-text: var(--ok-text);
+  --color-ok-tint: var(--ok-tint);
+  --shadow-card: var(--shadow);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--glow);
+  outline-offset: 2px;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.btn-primary,
+.btn-quiet,
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+.btn-quiet {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+.btn-quiet:hover:not(:disabled) {
+  background: var(--tint);
+}
+.btn-danger {
+  background: var(--coral);
+  color: var(--on-coral);
+}
+.btn-danger:hover:not(:disabled) {
+  filter: brightness(0.92);
+}
+.btn-primary:disabled,
+.btn-quiet:disabled,
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.field {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.875rem;
+}
+.field::placeholder {
+  color: var(--muted);
+  opacity: 0.85;
+}
+.field:focus {
+  border-color: var(--accent);
+}
+
+/* Data tables */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.data-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--tint);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--line);
+  vertical-align: middle;
+}
+.data-table tbody tr:hover {
+  background: color-mix(in srgb, var(--tint) 45%, transparent);
+}
