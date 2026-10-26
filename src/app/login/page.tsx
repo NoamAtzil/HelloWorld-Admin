@@ -15,7 +15,7 @@ export default async function LoginPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-4 py-10">
-      <div className="flex flex-col items-center gap-6 rounded-3xl border border-line bg-surface p-8 text-center shadow-card">
+      <div className="flex flex-col items-center gap-6 glass rounded-3xl p-8 text-center">
         <Brand />
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold tracking-tight">Admin sign-in</h1>

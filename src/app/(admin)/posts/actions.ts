@@ -170,6 +170,13 @@ export async function deletePost(id: number): Promise<DeleteResult> {
     .from("post-images")
     .remove([imagePath]);
 
+  // If the author had shared the post publicly, its public copy goes too. A
+  // post that was never shared has no copy there, so a miss is not an error.
+  const { error: sharedError } = await supabase.storage
+    .from("shared-images")
+    .remove([imagePath]);
+  if (sharedError) console.error("Deleting shared image failed:", sharedError, imagePath);
+
   // Storage reports "nothing removed" without an error when a policy hides the
   // object, so check the returned list too.
   if (removeError || !removed || removed.length === 0) {

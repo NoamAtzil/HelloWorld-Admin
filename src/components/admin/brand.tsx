@@ -4,7 +4,7 @@ import Link from "next/link";
 export function Brand() {
   return (
     <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Admin home">
-      <span className="text-xl font-semibold tracking-tight">
+      <span className="font-display text-xl font-bold tracking-tight">
         capti
         <span
           aria-hidden="true"

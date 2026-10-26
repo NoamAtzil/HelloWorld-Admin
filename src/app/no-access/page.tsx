@@ -18,7 +18,7 @@ export default async function NoAccessPage(props: PageProps<"/no-access">) {
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-10">
-      <div className="flex flex-col items-center gap-5 rounded-3xl border border-line bg-surface p-8 text-center shadow-card">
+      <div className="flex flex-col items-center gap-5 glass rounded-3xl p-8 text-center">
         <Brand />
         <h1 className="text-2xl font-semibold tracking-tight">No admin access</h1>
         <p className="text-sm text-muted">

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/admin";
 import { formatDateTime, formatNumber, pageNumber } from "@/lib/format";
 import type { VoteRow } from "@/lib/types";
-import { PageHeader } from "@/components/admin/page-header";
+import { EmptyState, PageHeader } from "@/components/admin/page-header";
 import { Pagination } from "@/components/admin/table-controls";
 import { StatCard } from "@/components/admin/stat-card";
 
@@ -30,9 +30,9 @@ export default async function VotesPage(props: PageProps<"/votes">) {
       />
 
       <div className="grid grid-cols-3 gap-3">
-        <StatCard label="Total votes" value={formatNumber(total)} />
-        <StatCard label="Upvotes" value={formatNumber(up)} />
-        <StatCard label="Downvotes" value={formatNumber(down)} />
+        <StatCard label="Total votes" value={formatNumber(total)} index={0} />
+        <StatCard label="Upvotes" value={formatNumber(up)} index={1} />
+        <StatCard label="Downvotes" value={formatNumber(down)} index={2} />
       </div>
 
       {error && (
@@ -54,12 +54,12 @@ export default async function VotesPage(props: PageProps<"/votes">) {
           <tbody>
             {rows.map((vote) => (
               <tr key={vote.id}>
-                <td className="whitespace-nowrap text-muted">{formatDateTime(vote.created_at)}</td>
-                <td>
+                <td data-label="When" className="whitespace-nowrap text-muted">{formatDateTime(vote.created_at)}</td>
+                <td data-label="Voter">
                   <span className="block font-medium">{vote.voter_name}</span>
                   <span className="block text-xs text-muted">{vote.voter_email ?? ""}</span>
                 </td>
-                <td>
+                <td data-label="Vote">
                   {/* Text + shape, not color alone. */}
                   <span
                     className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold ${
@@ -69,7 +69,7 @@ export default async function VotesPage(props: PageProps<"/votes">) {
                     {vote.value === 1 ? "▲ Up" : "▼ Down"}
                   </span>
                 </td>
-                <td className="max-w-xs">
+                <td data-label="Post" className="max-w-xs">
                   <Link
                     href={`/posts/${vote.generation_id}`}
                     className="block truncate text-accent-text underline-offset-2 hover:underline"
@@ -81,8 +81,10 @@ export default async function VotesPage(props: PageProps<"/votes">) {
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={4} className="py-10 text-center text-muted">
-                  No votes yet.
+                <td colSpan={4} className="cell-empty">
+                  <EmptyState icon="votes" title="No votes yet">
+                    Votes will show up here as people rate captions.
+                  </EmptyState>
                 </td>
               </tr>
             )}

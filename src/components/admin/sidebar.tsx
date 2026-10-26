@@ -2,44 +2,46 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { GROUPS, groupFor } from "@/lib/nav";
 
-const ICONS = {
-  dashboard: "M4 13h6V4H4zm10 7h6V4h-6zM4 20h6v-5H4z",
-  users: "M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0zM4 20a8 8 0 0 1 16 0",
-  media: "M4 6h16v12H4zM4 15l4-4 4 4 3-3 5 5",
-  votes: "M8 4l-5 8h10zM16 20l5-8H11z",
-};
-
-const NAV = [
-  { href: "/", label: "Dashboard", icon: ICONS.dashboard },
-  { href: "/users", label: "Users", icon: ICONS.users },
-  { href: "/posts", label: "AI Media", icon: ICONS.media },
-  { href: "/votes", label: "Votes", icon: ICONS.votes },
-];
-
-export function Sidebar() {
+// "rail" is the vertical list inside the desktop sidebar; "tabs" is the
+// floating bottom bar used on small screens (rendered outside the sidebar,
+// because a blurred ancestor would trap its fixed positioning).
+export function Sidebar({ variant }: { variant: "rail" | "tabs" }) {
   const pathname = usePathname();
+  const current = groupFor(pathname)?.key;
+  const tabs = variant === "tabs";
 
   return (
-    <nav aria-label="Admin sections">
-      <ul className="no-scrollbar flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
-        {NAV.map(({ href, label, icon }) => {
-          const active =
-            href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+    <nav
+      aria-label={tabs ? "Admin sections (mobile)" : "Admin sections"}
+      className={
+        tabs
+          ? "glass fixed inset-x-3 bottom-3 z-30 rounded-2xl p-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] lg:hidden"
+          : "hidden lg:block"
+      }
+    >
+      <ul className={tabs ? "grid grid-cols-6 gap-1" : "flex flex-col gap-1"}>
+        {GROUPS.map((group) => {
+          const active = current === group.key;
           return (
-            <li key={href} className="shrink-0">
+            <li key={group.key}>
               <Link
-                href={href}
+                href={group.tabs[0].href}
                 aria-current={active ? "page" : undefined}
-                className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm ${
+                className={`flex items-center rounded-xl text-sm transition-colors ${
+                  tabs
+                    ? "min-h-12 flex-col justify-center gap-0.5 px-0.5 py-1.5 text-[0.6rem] leading-tight"
+                    : "gap-2.5 px-3 py-2"
+                } ${
                   active
-                    ? "bg-tint font-semibold text-accent-text"
+                    ? "bg-tint font-semibold text-accent-text shadow-[inset_0_0_0_1px_rgb(255_122_26/0.28)]"
                     : "font-medium text-muted hover:bg-tint/60 hover:text-ink"
                 }`}
               >
                 <svg
                   viewBox="0 0 24 24"
-                  className="h-4 w-4"
+                  className={tabs ? "h-5 w-5" : "h-4 w-4"}
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.8"
@@ -47,9 +49,9 @@ export function Sidebar() {
                   strokeLinejoin="round"
                   aria-hidden="true"
                 >
-                  <path d={icon} />
+                  <path d={group.icon} />
                 </svg>
-                {label}
+                <span className={tabs ? "max-w-full truncate" : ""}>{group.label}</span>
               </Link>
             </li>
           );

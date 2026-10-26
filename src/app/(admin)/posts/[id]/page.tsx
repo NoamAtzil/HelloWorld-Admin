@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/admin";
 import { formatDateTime } from "@/lib/format";
-import type { PostRow } from "@/lib/types";
+import type { PostRow, PostStudioInfo } from "@/lib/types";
 import { Notice, PageHeader } from "@/components/admin/page-header";
 import { Card } from "@/components/admin/stat-card";
 import { DeletePost } from "./delete-post";
@@ -32,6 +32,11 @@ export default async function PostDetailPage(props: PageProps<"/posts/[id]">) {
   const post = ((data ?? []) as PostRow[])[0];
   if (!post) notFound();
 
+  // Studio details (voice, sharing, Drop, Arena record). Missing until the
+  // Studio migration is applied; the page works without it.
+  const { data: studioData } = await supabase.rpc("admin_post_studio", { p_id: id });
+  const studio = ((studioData ?? []) as PostStudioInfo[])[0] ?? null;
+
   const { data: signed } = await supabase.storage
     .from("post-images")
     .createSignedUrl(post.image_path, 60 * 60);
@@ -52,7 +57,7 @@ export default async function PostDetailPage(props: PageProps<"/posts/[id]">) {
 
       <div className="grid gap-4 lg:grid-cols-5">
         <div className="lg:col-span-3">
-          <div className="overflow-hidden rounded-2xl border border-line bg-tint-2 shadow-card">
+          <div className="panel overflow-hidden rounded-2xl bg-tint-2">
             {signed?.signedUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={signed.signedUrl} alt={post.content} className="max-h-[36rem] w-full object-contain" />
@@ -80,6 +85,22 @@ export default async function PostDetailPage(props: PageProps<"/posts/[id]">) {
                   (▲{post.upvotes} ▼{post.downvotes})
                 </span>
               </dd>
+              {studio && (
+                <>
+                  <dt className="text-muted">Voice</dt>
+                  <dd>{studio.voice ?? "—"}</dd>
+                  <dt className="text-muted">Sharing</dt>
+                  <dd>{studio.is_public ? "Shared publicly by the author" : "Members only"}</dd>
+                  <dt className="text-muted">Daily Drop</dt>
+                  <dd>{studio.drop_date ?? "—"}</dd>
+                  <dt className="text-muted">Arena</dt>
+                  <dd>
+                    {Number(studio.arena_battles) > 0
+                      ? `${studio.arena_wins} wins in ${studio.arena_battles} battles`
+                      : "No battles yet"}
+                  </dd>
+                </>
+              )}
               <dt className="text-muted">Image path</dt>
               <dd className="min-w-0 break-all font-mono text-xs">{post.image_path}</dd>
             </dl>

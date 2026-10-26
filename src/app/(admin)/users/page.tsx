@@ -1,7 +1,7 @@
 import { requireAdmin } from "@/lib/admin";
 import { formatDate, fullName, initials, one, pageNumber } from "@/lib/format";
 import type { UserRow } from "@/lib/types";
-import { PageHeader } from "@/components/admin/page-header";
+import { EmptyState, PageHeader } from "@/components/admin/page-header";
 import { Pagination, SearchForm } from "@/components/admin/table-controls";
 
 const PAGE_SIZE = 20;
@@ -69,7 +69,7 @@ export default async function UsersPage(props: PageProps<"/users">) {
               const name = fullName(user.first_name, user.last_name);
               return (
                 <tr key={user.id}>
-                  <td>
+                  <td className="cell-main">
                     <div className="flex items-center gap-3">
                       {user.avatar_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -90,18 +90,26 @@ export default async function UsersPage(props: PageProps<"/users">) {
                       )}
                     </div>
                   </td>
-                  <td className="text-muted">{user.email ?? "—"}</td>
-                  <td className="text-right tabular-nums">{user.posts}</td>
-                  <td className="text-right tabular-nums">{user.votes}</td>
-                  <td className="whitespace-nowrap text-muted">{formatDate(user.created_at)}</td>
-                  <td className="whitespace-nowrap text-muted">{formatDate(user.last_sign_in_at)}</td>
+                  <td data-label="Email" className="min-w-0 break-all text-muted">{user.email ?? "—"}</td>
+                  <td data-label="Posts" className="text-right tabular-nums">{user.posts}</td>
+                  <td data-label="Votes" className="text-right tabular-nums">{user.votes}</td>
+                  <td data-label="Joined" className="whitespace-nowrap text-muted">{formatDate(user.created_at)}</td>
+                  <td data-label="Last sign-in" className="whitespace-nowrap text-muted">{formatDate(user.last_sign_in_at)}</td>
                 </tr>
               );
             })}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={6} className="py-10 text-center text-muted">
-                  {q ? "No users match that search." : "No users yet."}
+                <td colSpan={6} className="cell-empty">
+                  {q ? (
+                    <EmptyState icon="search" title="No users match that search">
+                      Try a different name or email, or clear the search.
+                    </EmptyState>
+                  ) : (
+                    <EmptyState icon="users" title="No users yet">
+                      People appear here after their first sign-in.
+                    </EmptyState>
+                  )}
                 </td>
               </tr>
             )}

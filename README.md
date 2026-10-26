@@ -63,3 +63,42 @@ npm run lint && npx tsc --noEmit && npm run build
 - Don't add a service-role key or any admin API route; everything goes through
   the signed-in admin's own session and the guarded database functions.
 - Don't rely on a layout-only auth check (layouts don't re-run on navigation).
+
+
+## Week 7: Studio, Arena and Daily Drop administration
+
+Run `supabase/migrations/002_admin_studio.sql` **after** the caption app's migration `004`.
+It adds superadmin-only functions (same pattern as `001`) behind two new pages:
+
+- **Activity** (`/activity`): guest and member AI usage against the daily limits, Arena
+  battles, voices, Drop entries, public shares. Shows a warning if the guest quota secret
+  isn't configured.
+- **Drops** (`/challenges`): pin a library image and theme to a future day (today and past
+  days can't be changed), and review recent Drops with entries, votes and winners.
+
+Post detail pages also show voice, sharing, Drop and Arena record. Deleting a post also
+removes its public image copy. No existing admin function or policy was changed.
+
+
+## Homework 7: AI configuration, activity and access management
+
+Apply, in this order (each is additive and idempotent; the public app's `004` needs the admin `001`
+first):
+
+1. admin `001` (already applied) → public `004` → admin `002` → public `005` → admin `003`.
+
+`003_admin_ai_config.sql` adds superadmin-only tables protected by RLS in the database:
+`prompt_chains`, `prompt_chain_steps`, `prompt_chain_mix` (read + update weight only; rows are
+created with each step), `terms`, `generation_examples`, `allowed_signup_domains`,
+`whitelisted_emails` and `images` (plus the public `library-images` bucket, writable only by
+superadmins). `005` (public repo) adds `llm_providers`, `llm_models`, `generation_requests` and
+`llm_responses`.
+
+Everything is managed from one config-driven page, `/manage/[resource]`
+(`src/lib/resources.ts`): Images, Terms, Examples, Chains, Steps, Mix, Models, Providers,
+Requests, Responses, Signup domains and Whitelisted emails. The sidebar has six groups and each
+group's pages appear as tabs. Generation requests/responses are read-only and are filled by the
+caption app's real Studio pipeline. Models and providers referenced by that history cannot be
+deleted (deactivate them instead). Signup domains/emails are **recorded only**; nothing enforces
+them, so editing them cannot lock anyone out. Prompt chains are configuration only: the live
+Gemini prompts are unchanged.

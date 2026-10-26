@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/admin";
 import { formatDateTime, formatNumber } from "@/lib/format";
 import type { Overview } from "@/lib/types";
-import { PageHeader } from "@/components/admin/page-header";
+import { EmptyState, PageHeader } from "@/components/admin/page-header";
 import { Card, StatCard } from "@/components/admin/stat-card";
 import { ActivityChart, BarList, VoteSplit } from "@/components/admin/charts";
 
@@ -15,7 +15,7 @@ export default async function DashboardPage() {
     return (
       <>
         <PageHeader title="Dashboard" />
-        <p role="alert" className="rounded-xl bg-coral-tint px-4 py-3 text-sm text-coral-text">
+        <p role="alert" className="rounded-xl border border-coral/25 bg-coral-tint px-4 py-3 text-sm text-coral-text">
           Couldn&apos;t load the statistics. Please refresh the page.
         </p>
       </>
@@ -32,6 +32,8 @@ export default async function DashboardPage() {
     );
   const imageUrls = new Map((signed ?? []).map((s) => [s.path, s.signedUrl] as const));
 
+  const postTrend = stats.activity_by_day.map((d) => d.posts);
+  const voteTrend = stats.activity_by_day.map((d) => d.votes);
   const votesPerPost = stats.posts === 0 ? 0 : stats.votes / stats.posts;
 
   return (
@@ -42,13 +44,14 @@ export default async function DashboardPage() {
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Users" value={formatNumber(stats.users)} />
-        <StatCard label="AI posts" value={formatNumber(stats.posts)} hint={`${formatNumber(stats.posts_without_votes)} with no votes`} />
-        <StatCard label="Votes" value={formatNumber(stats.votes)} hint={`${votesPerPost.toFixed(1)} per post`} />
+        <StatCard label="Users" value={formatNumber(stats.users)} hint="Everyone who has signed in" index={0} />
+        <StatCard label="AI posts" value={formatNumber(stats.posts)} hint={`${formatNumber(stats.posts_without_votes)} with no votes`} spark={postTrend} index={1} />
+        <StatCard label="Votes" value={formatNumber(stats.votes)} hint={`${votesPerPost.toFixed(1)} per post`} spark={voteTrend} index={2} />
         <StatCard
           label="Positive votes"
           value={stats.votes === 0 ? "—" : `${Math.round((stats.upvotes / stats.votes) * 100)}%`}
           hint={`${formatNumber(stats.upvotes)} up · ${formatNumber(stats.downvotes)} down`}
+          index={3}
         />
       </div>
 
@@ -64,7 +67,7 @@ export default async function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card title="Top-rated posts">
           {stats.top_posts.length === 0 ? (
-            <p className="text-sm text-muted">No posts yet.</p>
+            <EmptyState icon="posts" title="No posts yet" compact>Generated captions will show up here once people start posting.</EmptyState>
           ) : (
             <ol className="flex flex-col gap-3">
               {stats.top_posts.map((post, index) => {
@@ -73,7 +76,7 @@ export default async function DashboardPage() {
                 <li key={post.id}>
                   <Link
                     href={`/posts/${post.id}`}
-                    className="flex items-center gap-3 rounded-xl p-1.5 hover:bg-tint/60"
+                    className="flex items-center gap-3 rounded-xl p-1.5 transition-colors hover:bg-tint/70"
                   >
                     <span className="w-5 shrink-0 text-center text-sm font-semibold text-muted">
                       {index + 1}
@@ -111,7 +114,7 @@ export default async function DashboardPage() {
         <div className="flex flex-col gap-4">
           <Card title="Most active users">
             {stats.active_users.length === 0 ? (
-              <p className="text-sm text-muted">No users yet.</p>
+              <EmptyState icon="users" title="No users yet" compact>People appear here after their first sign-in.</EmptyState>
             ) : (
               <BarList
                 items={stats.active_users.map((user) => ({
@@ -126,7 +129,7 @@ export default async function DashboardPage() {
 
           <Card title="Recent activity">
             {stats.recent_activity.length === 0 ? (
-              <p className="text-sm text-muted">Nothing yet.</p>
+              <EmptyState icon="votes" title="Nothing yet" compact>Posts and votes will stream in here.</EmptyState>
             ) : (
               <ul className="flex flex-col gap-2.5 text-sm">
                 {stats.recent_activity.map((item, index) => (

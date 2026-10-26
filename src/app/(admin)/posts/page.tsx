@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/admin";
 import { formatDate, one, pageNumber } from "@/lib/format";
 import type { PostRow } from "@/lib/types";
-import { Notice, PageHeader } from "@/components/admin/page-header";
+import { EmptyState, Notice, PageHeader } from "@/components/admin/page-header";
 import { Pagination, SearchForm } from "@/components/admin/table-controls";
 
 const PAGE_SIZE = 15;
@@ -93,7 +93,7 @@ export default async function PostsPage(props: PageProps<"/posts">) {
               const url = imageUrls.get(post.image_path);
               return (
                 <tr key={post.id}>
-                  <td>
+                  <td className="cell-main">
                     <div className="flex items-center gap-3">
                       {url ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -104,11 +104,11 @@ export default async function PostsPage(props: PageProps<"/posts">) {
                       <span className="line-clamp-2 min-w-[12rem] max-w-sm font-medium">{post.content}</span>
                     </div>
                   </td>
-                  <td>
+                  <td data-label="Author">
                     <span className="block">{post.author_name}</span>
                     <span className="block text-xs text-muted">{post.author_email ?? ""}</span>
                   </td>
-                  <td className="text-right">
+                  <td data-label="Score" className="text-right">
                     <span className="block font-semibold tabular-nums">
                       {post.score > 0 ? `+${post.score}` : post.score}
                     </span>
@@ -116,7 +116,7 @@ export default async function PostsPage(props: PageProps<"/posts">) {
                       ▲{post.upvotes} ▼{post.downvotes}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap text-muted">{formatDate(post.created_at)}</td>
+                  <td data-label="Created" className="whitespace-nowrap text-muted">{formatDate(post.created_at)}</td>
                   <td className="text-right">
                     <Link href={`/posts/${post.id}`} className="btn-quiet">
                       View
@@ -127,8 +127,16 @@ export default async function PostsPage(props: PageProps<"/posts">) {
             })}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={5} className="py-10 text-center text-muted">
-                  {q ? "No posts match that search." : "No posts yet."}
+                <td colSpan={5} className="cell-empty">
+                  {q ? (
+                    <EmptyState icon="search" title="No posts match that search">
+                      Try a different word, or clear the search.
+                    </EmptyState>
+                  ) : (
+                    <EmptyState icon="posts" title="No posts yet">
+                      Generated captions will appear here.
+                    </EmptyState>
+                  )}
                 </td>
               </tr>
             )}

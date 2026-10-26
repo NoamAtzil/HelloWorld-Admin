@@ -12,7 +12,7 @@ export function NewPostForm() {
   return (
     <form
       action={formAction}
-      className="flex max-w-xl flex-col gap-5 rounded-2xl border border-line bg-surface p-5 shadow-card"
+      className="flex max-w-xl flex-col gap-5 panel rounded-2xl p-5"
     >
       <div className="flex flex-col gap-1.5">
         <label htmlFor="image" className="text-sm font-medium">

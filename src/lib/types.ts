@@ -83,3 +83,46 @@ export type VoteRow = {
   total_up: number;
   total_down: number;
 };
+
+export type StudioStats = {
+  caps: { guest_per_visitor: number; guest_global: number; user_daily: number; global_daily: number };
+  quota_configured: boolean;
+  today: {
+    guest_calls: number;
+    guest_visitors: number;
+    user_calls: number;
+    users_active: number;
+    total_calls: number;
+  };
+  usage_by_day: { day: string; guest: number; members: number }[];
+  content: { public_posts: number; drop_entries: number; drop_entries_today: number };
+  voices: { voice: string; posts: number }[];
+  arena: { battles: number; judges: number; by_day: { day: string; battles: number }[] };
+};
+
+export type ChallengeRow = {
+  drop_date: string;
+  library_slug: string;
+  theme: string | null;
+  entries: number;
+};
+
+export type DropHistoryRow = {
+  drop_date: string;
+  library_slug: string | null;
+  entries: number;
+  votes: number;
+  winner_id: number | null;
+  winner_content: string | null;
+  winner_author: string | null;
+  winner_score: number | null;
+};
+
+export type PostStudioInfo = {
+  voice: string | null;
+  library_slug: string | null;
+  is_public: boolean;
+  drop_date: string | null;
+  arena_wins: number;
+  arena_battles: number;
+};
